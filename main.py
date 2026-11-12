@@ -42,6 +42,11 @@ def main():
         SRC.read_bytes()
     ).hexdigest():
         raise RuntimeError("output hash does not match the source image")
+    # The gate tells PNG from JPEG by first bytes; confirm the copy is
+    # still a whole JPEG (SOI marker at the start, EOI marker at the end).
+    data = DST.read_bytes()
+    if not data.startswith(b"\xff\xd8\xff") or not data.endswith(b"\xff\xd9"):
+        raise RuntimeError("output is not a whole JPEG image")
 
 
 if __name__ == "__main__":
